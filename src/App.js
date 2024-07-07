@@ -5,6 +5,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const searchRepo = async () => {
     if (searchTerm.trim() === '') {
@@ -14,6 +15,7 @@ function App() {
 
     setResult(null);
     setError('');
+    setLoading(true);
 
     try {
       const response = await fetch(`https://api.github.com/search/repositories?q=${searchTerm}`);
@@ -29,6 +31,8 @@ function App() {
     } catch (error) {
       setError('Error fetching repositories.');
       console.error('Error:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -45,6 +49,7 @@ function App() {
         />
         <button onClick={searchRepo}>Search</button>
       </div>
+      {loading && <div className="loading">Loading...</div>}
       <div id="result">
         {error && <p>{error}</p>}
         {result && result.length === 0 && <p>No repositories found.</p>}
@@ -69,6 +74,10 @@ function App() {
               <div className="info">
                 <img src="https://img.icons8.com/ios-filled/50/000000/code-fork.png" alt="Forks Icon" width="16" height="16" />
                 <strong>Forks:</strong> {repo.forks_count}
+              </div>
+              <div className="info">
+                <img src="https://img.icons8.com/ios-filled/50/000000/error.png" alt="Issues Icon" width="16" height="16" />
+                <strong>Issues:</strong> {repo.open_issues_count}
               </div>
             </div>
           </div>
